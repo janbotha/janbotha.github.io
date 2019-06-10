@@ -1,0 +1,380 @@
+﻿//$(document).ready(function () {
+//    $('.Background').css('display', 'none');
+//    var local = '/competition/CataloguePage/CheckIfCompetitionIsOpen';
+//    if ($('.FormContent').length && $('#CompCode').length) {
+//        var CompCode = $('#CompCode').val();
+
+//        $.ajax({
+//            type: "GET",
+//            timeout: 20000,
+//            data: { 'CompCode': CompCode },
+//            cache: false,
+//            url: local,
+//            success: function (result) {
+//                if (result.isOpenCompetition) {
+//                    $('.Background').css('display', 'block');
+//                }
+//                else {
+//                    window.location.href = "/women/closed";
+//                }
+//            },
+//            statusCode: {
+//                404: function (content) { alert('cannot find resource'); },
+//                500: function (content) { alert('internal server error'); }
+//            },
+//            error: function (req, status, errorObj) {
+//                // handle status === "timeout"
+//                // handle other errors
+//            },
+//            complete: function (jqXHR, errorThrown) {
+//                if (errorThrown == 'timeout') {
+
+//                }
+//            }
+//        });
+//        //bind all form elements to validatecontrol in formValidation.js
+//        //$(".required").each(function () {
+//        //    $(this).validateControl();
+//        //});	        
+//    }
+//});
+
+function EmailSignUpSubmission() {
+    form = document.getElementById("EmailSignup");
+    TrackLinkID(form);
+    form.submit();
+   }
+
+   var Breadcrumb = {
+       Init: function ($Breadcrumb) {
+           var BCT = $Breadcrumb.html();
+           if (BCT.length) {
+               try {
+                   UpdateBreadcrumbTrail(BCT);
+               } catch (e) {
+               }
+           }
+       }
+   }
+
+   var LinkedImageHover = {
+   	Init: function ($LinkedImageHovers) {
+
+   		$LinkedImageHovers.each(function () {
+
+   			var $linkedImageHover = $(this);
+   			var $link = $linkedImageHover.find("a");
+
+   			LinkedImageHover.Interaction($link);
+
+   		});
+
+   	},
+   	Interaction: function ($link) {
+
+   		var $initialImage = $link.find("img.InitialImage");
+   		var $hoverImage = $link.find("img.HoverImage");
+
+   		var animation = $link.data("animation");
+
+   		switch (animation) {
+   			case "None":
+   			case "":
+   				$link.hover(function () {
+   					$initialImage.hide()
+   					$hoverImage.show()
+   				}, function () {
+   					$initialImage.show();
+   					$hoverImage.hide();
+   				});
+
+   				break;
+   			case "Fade":
+   				if (!$("html").hasClass("csstransitions")) {
+   					$hoverImage.removeClass("Hide");
+   					$link.hoverIntent(function () {
+   						$initialImage.fadeOut(400);
+   						$hoverImage.fadeIn(400);
+   					}, function () {
+   						$initialImage.fadeIn(400);
+   						$hoverImage.fadeOut(400);
+   					});
+   				}
+   				break;
+   		}
+
+
+
+   	}
+   }
+
+   var Teaser = {
+   	Init: function ($Teasers) {
+
+
+
+   		$Teasers.each(function () {
+
+   			var $teaser = $(this);
+   			var $body = $teaser.find(".Body");
+   			var $info = $teaser.find(".Info");
+   			var $titleLink = $teaser.find("h2 a");
+
+   			var titleUrl = $titleLink.attr("href");
+
+   			//Set the titleUrl as a click event for the entire teaser area
+   			if (titleUrl.length) {
+   				$body.css("cursor", "pointer");
+   				$body.click(function () {
+   					TrackLinkID($titleLink[0]); //[0] converts the titleLink jquery object into DOM object
+   					window.location += titleUrl;
+   				});
+   			}
+
+   			//Calculate the top position for $info when hover over and off
+   			//infoHoverOverTop is calculated by the initial top position, subtracting the outerHeight and 20px
+   			//20px is because margin-bottom has an additional 20px so that the "jump" which $info makes doesn't go higher than its height
+			//infoHoverOffTop is set to the initial $info position so that it is reset when hovering off
+   			var infoHoverOverTop = $info.position().top - ($info.outerHeight() - 20);
+   			var infoHoverOffTop = $info.position().top;
+
+   			//hoverIntent to show/hide the .Info element
+   			//Use CSS3 transitions if they are available, otherwise use jQuery animate
+   			if ($("html").hasClass("csstransitions")) {
+   				$teaser.hoverIntent(function () {					
+					var transition = "all 0.45s cubic-bezier(0.175, 0.885, 0.320, 1.275)";
+   					$info.css({
+   						"top": infoHoverOverTop,
+   						"-webkit-transition": transition,
+						"-moz-transition": transition,
+						"-ms-transition": transition,
+						"-o-transition": transition,
+						"transition": transition
+   					});
+   				}, function () {
+					var transition = "all 0.45s cubic-bezier(0.600, -0.280, 0.735, 0.045)";
+   					$info.css({
+   						"top": infoHoverOffTop,
+   						"-webkit-transition": transition,
+						"-moz-transition": transition,
+						"-ms-transition": transition,
+						"-o-transition": transition,
+						"transition": transition
+   					});
+   				});
+   			}
+   			else {
+   				$teaser.hoverIntent(function () {
+   					$info.animate({
+   						top: infoHoverOverTop
+   					}, 450, "easeOutBack");
+   				}, function () {
+   					$info.animate({
+   						top: infoHoverOffTop
+   					}, 450, "easeInBack");
+   				});
+   			}
+
+
+
+   		});
+
+
+   	}
+   }
+
+   var StorefrontCarousel = {
+       Init: function ($Carousels) {
+
+           $Carousels.each(function () {
+               var $carousel = $(this);
+               if ($carousel.hasClass("AutoScroll")) {
+                   var elementId = $(this).attr("id");
+                   CarouselCreateLoopTimer("#" + elementId, "+", 5000);
+               }
+           });
+
+       }
+   }
+
+   function searchRefresh() {
+       var query = $('#SearchForm input[name=w]').val();
+       if (query.length == 0)
+           query = '*';
+       var criteria = $('#SearchForm input[name=criteria]').val();
+       var url = '/search?w=' + query + '&' + criteria;
+       window.location = url;
+       return false;
+   }
+
+   function validateForm() {
+       var isValid = true;
+       $("#CompForm .required").each(function () {
+           var result = $(this).validateControl('validate');
+           if (result == false) {
+               isValid = false;
+           }
+       });
+       return isValid;
+   }
+
+   function fieldFocus(target) {
+
+       if ($(target).attr("data-default").length > 0) {
+
+           $(target).addClass("fieldDefault");
+
+           var targetDefault = $(target).attr("data-default");
+           $(target).val(targetDefault);
+
+           $(target).focus(function () {
+               $(this).removeClass("fieldDefault");
+               if ($(target).val() == targetDefault) {
+                   $(target).val("");
+               }
+           });
+
+           $(target).blur(function () {
+
+               if ($(target).val() == "") {
+                   $(this).addClass("fieldDefault");
+                   $(target).val(targetDefault);
+               }
+           });
+       }
+
+   }
+
+$(function () {
+
+    if (window.location.pathname == "/" || window.location.pathname.toLowerCase() == Next.Settings.Channel.MainSiteAbsolutePath.toLowerCase()) {
+        if ($(".PageHeader").hasClass("Large")) {
+            $(".PageHeader .BreadcrumbNavigation").fadeIn(250);
+        }
+    } else {
+        if (!$(".PageHeader").hasClass("Large")) {
+            $(".PageHeader").addClass("Large");
+            $(".PageHeader .BreadcrumbNavigation").fadeIn(250);
+        }
+    }
+
+	var $Storefront = $(".Storefront");
+	var $StorefrontContent = $Storefront.find(".StorefrontContent");
+
+	$("#CompForm .required").each(function () {
+	    $(this).validateControl();
+	});
+
+	$("#CompForm input").each(function () {
+	    fieldFocus($(this));
+	});
+
+	$("#CompForm input[type=submit]").click(function () {
+	    return validateForm();
+	});
+
+	//Check if Breadcrumb components exist before initialising
+	var $Breadcrumb = $Storefront.find(".BreadcrumbWrapper");
+	if ($Breadcrumb.length) {
+		Breadcrumb.Init($Breadcrumb);
+	}
+
+	//Check if LinkedImageHover components exist before initialising
+	var $LinkedImageHovers = $StorefrontContent.find(".LinkedImageHover");
+	if ($LinkedImageHovers.length) {
+		LinkedImageHover.Init($LinkedImageHovers);
+	}
+
+	//Check if Teaser components exist before initialising
+	var $Teasers = $StorefrontContent.find(".Teaser");
+	if ($Teasers.length) {
+		Teaser.Init($Teasers);
+	}
+
+	var $Carousels = $StorefrontContent.find(".Component section.Carousel");
+	if ($Carousels.length) {
+	    StorefrontCarousel.Init($Carousels);
+	}
+
+	$(function () {
+		Next.NextTrial.getTrialHomepage(); 
+	});
+
+	SetRecentlyViewedDisplay();
+});
+
+$(document).ready(function () {
+    var $body = $('body'),
+    scrollDisabled = false,
+    scrollTop;
+
+    function scrollDisable() {
+        if (scrollDisabled) {
+            return;
+        }
+
+        scrollTop = $(window).scrollTop();
+
+        $body.addClass('lockScroll')
+            .css({
+                top: -1 * scrollTop
+            });
+
+        scrollDisabled = true;
+    }
+
+    function scrollEnable() {
+        if (!scrollDisabled) {
+            return;
+        }
+
+        $body.removeClass('lockScroll');
+        $(window).scrollTop(scrollTop);
+
+        scrollDisabled = false;
+    }
+    if (Next.Settings.UI.DesktopCreditTrayEnabled) {
+        var $lnkCredit = $(".cm-imagemap__area--static");
+        $lnkCredit.click(function (e) {
+            if (window.top == window.self && $(this).data("creditLink") == "/credit") {
+                e.preventDefault();
+                var crUrl = $(this).attr('data-credit-link');
+                $('#cfFrameInner').html('<iframe src="' + crUrl + '?modalMode=true" frameborder="0" scrolling="yes" id="crPage" style="overflow: hidden; width: 100%; height: 100%;"></iframe>');
+                $('.iframeLoader').switchClass('hideLoader', 'showLoader');
+                $('#crFrame').css({ 'left': '0' });
+                if (navigator.userAgent.indexOf("MSIE 9.0") > -1) {
+                    $('#crFrame').css({ 'right': '', 'left': '-105%' }).animate({ 'left': '0' }, 200, 'linear');
+                }
+                scrollDisable();
+                //$('#crFrame').css({ 'right': '', 'left': '-105%' }).animate({ 'left': '0' }, 600, 'linear', scrollDisable());
+                $('#crPage').on('load', function () {
+                    $("#crPage").contents().find(".HeaderSpacer").hide();
+                    $("#crPage").contents().find(".cm_bootstrap").css({ 'margin-top': '0' });
+                    $("#crPage").contents().find(".Background").css({ 'padding': '0' });
+                    $("#crPage").contents().find(".cm-teaser-overlay__text").css({ 'padding': '10px 15px' });
+                    $("#crPage").contents().find(".ContentArea").css({ 'min-width': 'auto', 'width': '941px', 'padding-bottom': '0' });
+                    $("#crPage").contents().find(".StorefrontContent").css({ 'width': '941px' });
+                    $("#crPage").contents().find(".Storefront").css({ 'padding-bottom': '0' });
+                    $('.iframeLoader').switchClass('showLoader', 'hideLoader');
+
+                });
+            }
+            else {
+                window.top.location.href = $(this).data("creditLink");
+            }
+            return false;
+        });
+
+    $("#crCloseButton").click(function () {
+        $('#crFrame').css({ 'left': '-200%' });
+        if (navigator.userAgent.indexOf("MSIE 9.0") > -1) {
+            $('#crFrame').css({ 'right': '', 'left': '0' }).animate({ 'left': '-105%' }, 200, 'linear');
+        }
+        scrollEnable();
+    });
+    for (var i = 0; i < $lnkCredit.length; i++) {
+        $($lnkCredit[i]).attr("data-credit-link", $($lnkCredit[i]).attr("href"));
+    }
+    $lnkCredit.removeAttr('href');
+}
+});

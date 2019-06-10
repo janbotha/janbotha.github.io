@@ -1,0 +1,773 @@
+﻿
+////////////////////////////////////Carousel
+(function ($) {
+
+    var methods = {
+        getItemWidth: function () {
+            return getObjDimensions(this.find("li").first()).width;
+        },
+        Settings: {
+            startPosition: null,
+            endPosition: null,
+            TargetElement: null,
+            TargetElementStart: null,
+            Pages: null,
+            PageWidth: null,
+            Next: null,
+            Prev: null,
+            isMouseDown:null,
+            visibleItems:5
+        },
+        TouchInit: function (options) {
+            methods.Settings.TargetElement = options.TargetElement;
+            methods.Settings.Next = $(methods.Settings.TargetElement).find(".NextCarouselNext a");
+            methods.Settings.Prev = $(methods.Settings.TargetElement).find(".NextCarouselPrevious");
+            methods.Settings.Pages = $(methods.Settings.TargetElement).find(".CarouselContent.NextCarousel");
+            methods.Settings.PageWidth = $(methods.Settings.TargetElement).find(".CarouselContent.NextCarousel .carousel-image").width() + parseInt($(methods.Settings.TargetElement).find(".CarouselContent.NextCarousel li").css("margin-right").replace("px", ""));
+
+            methods.AddTouch();
+            // This is required to swipe the carousel with mouse on desktop to test, uncomment it to enable on desktop, comment it before checking in the code
+            //$( methods.Settings.TargetElement).find("a").each(function () { 
+            //    $(this).removeAttr("onclick").click(function () {
+            //        return false;
+            //    });
+            // });
+
+        },
+
+        AddTouch: function () {
+
+            var config = {
+                touchStart: methods.touchStart,
+                touchMove: methods.touchMove,
+                touchEnd: methods.touchEnd,
+                touchLeave: methods.touchLeave,
+                useMouse: true
+            }
+
+            $(methods.Settings.TargetElement).NXTouch(config);
+        },
+        touchStart: function (e, NXTouchObj) {
+
+            methods.Settings.isMouseDown = true;
+            methods.Settings.startPosition = NXTouchObj.X;
+
+            methods.Settings.TargetElementStart = parseInt(methods.Settings.Pages.css("left"));
+            if (isNaN(methods.Settings.TargetElementStart))
+                methods.Settings.TargetElementStart = 0;
+
+
+        },
+
+        touchMove: function (e, NXTouchObj) {
+            if (methods.Settings.isMouseDown) {
+                var targetLeft = methods.Settings.TargetElementStart + NXTouchObj.DistanceX;
+
+                if (targetLeft > 0)
+                    targetLeft = 0;
+
+                if (targetLeft < -(methods.Settings.Pages.width() -methods.Settings.PageWidth*methods.Settings.visibleItems))
+                    targetLeft = -(methods.Settings.Pages.width() - methods.Settings.PageWidth*methods.Settings.visibleItems);
+
+                methods.Settings.Pages.css("left", targetLeft);
+
+
+            }
+        },
+
+        touchEnd: function (e,NXTouchObj) {
+            if (methods.Settings.isMouseDown) {
+
+                methods.Settings.endPosition = NXTouchObj.X;
+
+                //console.log('start:' + methods.Settings.startPosition)
+                //console.log('end:' + methods.Settings.endPosition)
+                if (Math.abs(methods.Settings.startPosition - methods.Settings.endPosition) > methods.Settings.PageWidth / 2) {
+
+                    if (methods.Settings.endPosition < methods.Settings.startPosition) {
+                        $(methods.Settings.TargetElement).find(".NextCarouselNext a").click();
+                    }
+                    else {
+                        $(methods.Settings.TargetElement).find(".NextCarouselPrevious a").click();
+                    }
+
+                }
+                else
+                {
+                    var distanceDragged =  parseInt(methods.Settings.Pages.css("left"));
+
+                    if((methods.Settings.startPosition - methods.Settings.endPosition) != 0)
+                        distanceDragged +=(methods.Settings.startPosition - methods.Settings.endPosition);
+
+                    methods.Settings.Pages.animate({ "left":  distanceDragged  },300);
+
+                }
+
+                methods.Settings.isMouseDown = false;
+            }
+        },
+        scrollCarouselRegion: function (carousel, index) {
+            var currentView = parseInt($(carousel).attr("data-viewindex"));
+
+            if (index == currentView) {
+                return false;
+            }
+            var totalViews = parseInt($(carousel).attr("data-viewcount"));
+            var viewPortWidth = $(carousel).parent().width();
+            var itemMargin = methods.getObjDimensions($(carousel).find("li").first()).marginRight;
+
+            if (index == 'prev') {
+                index = parseInt(currentView - 1);
+            }
+            if (index == 'next') {
+                index = parseInt(currentView + 1);
+            }
+
+            if (index == 0) {
+                $(carousel).closest(".NextCarouselWrapper").find("li.NextCarouselPrevious").addClass("disabled");
+
+            }
+
+            if (index > 0) {
+                $(carousel).closest(".NextCarouselWrapper").find("li.NextCarouselPrevious").removeClass("disabled");
+            }
+
+
+            if (index == totalViews - 1) {
+                $(carousel).closest(".NextCarouselWrapper").find("li.NextCarouselNext").addClass("disabled");
+
+            }
+
+            if (index < totalViews - 1) {
+                $(carousel).closest(".NextCarouselWrapper").find("li.NextCarouselNext").removeClass("disabled");
+            }
+
+
+            if (index < 0) { return false; }
+            if (index == totalViews) { return false; }
+            var diff = index - currentView;
+            var distance = (diff * viewPortWidth) + (diff * itemMargin);
+
+            if((methods.Settings.startPosition - methods.Settings.endPosition) != 0)
+                distance -=(methods.Settings.startPosition - methods.Settings.endPosition);
+
+
+            //console.log(distance);
+            $(carousel).animate({
+                left: '-=' + distance
+            }, 500, function () {
+            });
+
+            $(carousel).attr("data-viewindex", index);
+
+            var curLinkIndex = -1;
+            var navList = $(carousel).parent().parent().find(".NextNavWrapper").find("ul");
+            $(navList).find("li").each(function () {
+                $(this).removeClass("NextCarouselLinkActive");
+                if (curLinkIndex == index) {
+                    $(this).addClass("NextCarouselLinkActive");
+                }
+                curLinkIndex++;
+            });
+
+            return false;
+        },
+        getIntFromPixelValue: function (pixelValue) {
+            if (!pixelValue) { return 0; }
+            pixelValue = pixelValue.replace('px', '');
+            return parseInt(pixelValue);
+        },
+        getObjDimensions: function (obj) {
+            //width
+            var Width = methods.getIntFromPixelValue($(obj).css("width"));
+            var PaddingLeft = methods.getIntFromPixelValue($(obj).css("padding-left"));
+            var PaddingRight = methods.getIntFromPixelValue($(obj).css("padding-left"));
+            var marginLeft = methods.getIntFromPixelValue($(obj).css("margin-left"));
+            var marginRight = methods.getIntFromPixelValue($(obj).css("margin-right"));
+            var borderLeft = methods.getIntFromPixelValue($(obj).css("border-left-width"));
+            var borderRight = methods.getIntFromPixelValue($(obj).css("border-right-width"));
+            var totalWidth = Width + PaddingLeft + PaddingRight + marginLeft + marginRight + borderLeft + borderRight;
+
+            //height
+            var Height = methods.getIntFromPixelValue($(obj).css("height"));
+            var PaddingTop = methods.getIntFromPixelValue($(obj).css("padding-top"));
+            var PaddingBottom = methods.getIntFromPixelValue($(obj).css("padding-bottom"));
+            var marginTop = methods.getIntFromPixelValue($(obj).css("margin-top"));
+            var marginBottom = methods.getIntFromPixelValue($(obj).css("margin-bottom"));
+            var borderTop = methods.getIntFromPixelValue($(obj).css("border-top-width"));
+            var borderBottom = methods.getIntFromPixelValue($(obj).css("border-bottom-width"));
+            var totalHeight = Height + PaddingTop + PaddingBottom + marginTop + marginBottom + borderTop + borderBottom;
+
+            var dimension = { "height": totalHeight, "width": totalWidth, "marginLeft": marginLeft, "marginRight": marginRight };
+
+            return dimension;
+        }
+    };
+
+
+    $.fn.NextCarousel = function (config) {
+
+        var settings = $.extend({
+            'VisibleItems': 4,
+            'ItemsToScroll': 5,
+            'CompactNav': true,
+            'LeftRightNav': false,
+            'AutoWidth':true
+        }, config);
+
+        var NextCarousel = this;
+
+
+        //Remove any existing carousel nav
+        this.find(".NextNavWrapper").remove();
+
+        $(NextCarousel).addClass("NextCarousel");
+        var clippingDiv = $("<div />");
+        $(clippingDiv).addClass("NextCarouselClippingRegion");
+        this.wrap(clippingDiv);
+
+        var wrappingDiv = $("<div />");
+        $(wrappingDiv).addClass("NextCarouselWrapper");
+        this.parent().wrap(wrappingDiv);
+
+        var listItemDimensions = methods.getObjDimensions(this.find("li").first());
+        var clippingRegionWidth = (listItemDimensions.width * settings.VisibleItems) - listItemDimensions.marginRight;
+        var itemCount = this.find("li").length;
+
+        var listWidth = listItemDimensions.width * itemCount;
+        var viewCount = Math.ceil(itemCount / settings.VisibleItems);
+        //console.log(listWidth + " " + listItemDimensions.marginRight + " " + clippingRegionWidth);
+        this.width(listWidth);
+
+        this.attr("data-viewindex", 0);
+        this.attr("data-viewcount", viewCount);
+        if (settings.AutoWidth) {
+            $(".NextCarouselWrapper").width(clippingRegionWidth);
+            $(".NextCarouselClippingRegion").width(clippingRegionWidth);
+        }
+
+        if ($(".NextCarouselWrapper").length) {
+            var options = { TargetElement: '.NextCarouselWrapper' };
+
+            methods.TouchInit(options);
+        }
+        //Compact nav
+        if (settings.CompactNav && itemCount > settings.VisibleItems ) {
+
+            var navContainer = $("<div />");
+            $(navContainer).addClass("NextNavWrapper");
+            var navList = $("<ul />");
+            var prevLinkItem = $("<li />");
+            $(prevLinkItem).addClass("NextCarouselPrevious");
+            $(prevLinkItem).addClass("disabled");
+            var prevLink = $("<a  href=\"#\">Previous</a>");
+            $(prevLink).click(function () {
+                methods.scrollCarouselRegion(NextCarousel, 'prev');
+                return false;
+            });
+            $(prevLinkItem).append(prevLink);
+            $(navList).append(prevLinkItem);
+
+
+
+            for (i = 0; i < viewCount; i++) {
+
+                var navItem = $("<li />");
+                if (i == 0) {
+                    $(navItem).addClass("NextCarouselLinkActive");
+                }
+                var navLink = $("<a href=\"#\" >" + i + "</a>");
+                $(navLink).click(function () {
+                    methods.scrollCarouselRegion(NextCarousel, $(this).text());
+                    return false;
+                });
+                $(navItem).append(navLink);
+                $(navList).append(navItem);
+            }
+
+            var nextLinkItem = $("<li />");
+            $(nextLinkItem).addClass("NextCarouselNext");
+
+            var nextLink = $("<a href=\"#\">Next</a>");
+            $(nextLink).click(function () {
+                methods.scrollCarouselRegion(NextCarousel, 'next');
+                return false;
+            });
+
+            $(nextLinkItem).append(nextLink);
+            $(navList).append(nextLinkItem);
+
+            $(navContainer).append(navList);
+            this.parent().after(navContainer);
+
+            var ulWidth = 0;
+            $(navList).find("li").each(function () {
+                ulWidth += $(this).outerWidth(true);
+            })
+            $(navList).width(ulWidth);
+            $(navContainer).width(ulWidth);
+
+        }
+
+
+        if (settings.LeftRightNav && itemCount > settings.VisibleItems) {
+
+            var prevLinkLarge = $("<a class=\"NextCarouselLeft\" href=\"#\" >Previous</a>");
+            $(prevLinkLarge).click(function () {
+                methods.scrollCarouselRegion(NextCarousel, 'prev');
+                return false;
+            });
+            var nextLinkLarge = $("<a class=\"NextCarouselRight\" href=\"#\" >Next</a>");
+            $(nextLinkLarge).click(function () {
+                methods.scrollCarouselRegion(NextCarousel, 'next');
+                return false;
+            });
+            this.parent().before(prevLinkLarge);
+            this.parent().after(nextLinkLarge);
+        }
+
+        //console.log("classes added");
+
+    };
+})(jQuery);
+
+////////////////////////////////////SlideWindow
+(function ($) {
+    var methods = {
+
+        init: function (options) {
+            this.addClass("NextSlideWindow");
+            var NextSlideWindow = this;
+            var heading = this.children().first();
+            var $headingTitle = heading.find(".Title");
+            var content = $(heading).next();
+            var contentHeight = $(content).height();
+            var openButton = $("<a href=\"#\" class=\"btnOpen\" >Show</a>");
+            var closeButton = $("<a href=\"#\" class=\"btnClose\" >Hide</a>");
+
+            var headingHeight = heading.outerHeight(true);
+
+            //Open///////////
+            $(openButton).click(function () {
+
+                var targetHeight;
+
+                if($(NextSlideWindow).hasClass("ReviewContainer")) {
+                    var reviewContent =  $(".reviewContent");
+                    var containerHeight = $(reviewContent).height();
+                    if (containerHeight == 0 ) {
+                        var itemCount =  $(reviewContent).find("ul li.reviewBlock").size();
+                        containerHeight = itemCount * 265;
+                    }
+                    targetHeight = containerHeight + 17;
+                }
+                else if($(NextSlideWindow).hasClass("Categories")) {
+                    targetHeight = 340;
+                }
+                else {
+                    targetHeight = 170;
+                }
+
+                $(NextSlideWindow).animate({
+                    height: "+=" + targetHeight
+                }, 500, function(){
+                    $(NextSlideWindow).removeAttr("style");
+                });
+
+
+                if(!$(".ProductPage").length){
+                    $("html,body").animate({scrollTop: $(NextSlideWindow).offset().top - $(".PageHeader").height()}, "easeOutCubic");
+                }
+
+                $(closeButton).show();
+                $(openButton).hide();
+
+                $(heading).next().fadeIn(300);
+
+                return false;
+            });
+
+            //Close///////////
+            $(closeButton).click(function () {
+
+                $(NextSlideWindow).animate({
+                    height: headingHeight
+                }, 500);
+
+                $(closeButton).hide();
+                $(openButton).show();
+
+                $(heading).next().fadeOut(300);
+                if ($(NextSlideWindow).hasClass("ReviewContainer")) {
+                    $(".reviewPagination").fadeOut(300);
+                }
+                return false;
+            });
+
+
+
+            $headingTitle.after(closeButton);
+            $headingTitle.after(openButton);
+
+            $(openButton).hide();
+        },
+
+        Open: function(){
+
+            var targetHeight;
+            var animate = true;
+            if(this.hasClass("ReviewContainer")) {
+                animate = false;
+                this.removeAttr("style");
+            }
+            else if(this.hasClass("Categories")) {
+                targetHeight = 340;
+            }
+            else {
+                targetHeight = 170;
+            }
+
+
+
+            if(animate){
+                this.animate({
+                    height: "+=" + targetHeight
+                }, 500, function(){
+
+                });
+            }
+
+            var heading = this.children().first();
+
+            this.find("a.btnOpen").hide();
+            this.find("a.btnClose").show();
+
+            $(heading).next().fadeIn(300);
+
+        },
+        Close: function(){
+
+            this.animate({
+                height: 54
+            }, 500);
+
+            var heading = this.children().first();
+
+            this.find("a.btnOpen").show();
+            this.find("a.btnClose").hide();
+
+            $(heading).next().fadeOut(300);
+
+        },
+        DataBind: function (data, suppressAnimation) {
+
+            var heading = this.children().first();
+            var content = $(heading).next();
+            // var currentContentHeight = $(content).height();
+            $(content).html(data);
+
+
+
+            if(!suppressAnimation){
+
+                var openButton = $(this).find("a.btnOpen");
+
+                if($(openButton).css('display') == 'block' || $(openButton).css('display') == 'inline')
+                {
+                    $(openButton).click();
+                }else{
+
+                    var targetHeight = $(".reviewContent").height() + 71;
+                    $(this).animate({
+                        height: targetHeight
+                    }, 500);
+                }
+            }else{
+                $(this).find("a.btnClose").click();
+
+            }
+
+
+        }
+
+    };
+
+
+    $.fn.NextSlideWindow = function (method) {
+
+        if (methods[method]) {
+            return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+        } else if (typeof method === 'object' || !method) {
+            return methods.init.apply(this, arguments);
+        } else {
+            $.error('Method ' + method + ' does not exist on jQuery.validateControl');
+        }
+    };
+
+})(jQuery);
+
+
+/////////////////////////////////////Helper PopUp
+(function ($) {
+
+
+    var methods = {
+
+
+
+
+    };
+
+    $.fn.NextHelperPopUp = function (config) {
+
+        var settings = $.extend({
+            'target': '',
+            'align': 'right',
+            'autoClose': true,
+            'width': 0
+        }, config);
+
+
+
+        this.mouseover(function () {
+            var $this = this;
+            $($this).addClass("popTargetOver");
+
+            if(settings.delay){
+
+                setTimeout(function(){
+                    if($($this).hasClass("popTargetOver")){
+                        showDialoguePopUp($this, settings);
+                    }
+
+                },settings.delay);
+
+            }else{
+                showDialoguePopUp($this, settings);
+            }
+        });
+
+        this.mouseout(function(){
+            var $this = this;
+            $($this).removeClass("popTargetOver");
+        });
+
+
+    };
+})(jQuery);
+
+
+function hideDialoguePopUp(src) {
+
+    var customDdl = $(src).parent("div.dk_container");
+    if (customDdl.length) {
+        src = customDdl;
+    }
+
+    var animateValue = "-=15";
+
+    var dialougue = $(src).next(".NextHelperPopUp");
+
+    if ($(dialougue).length) {
+        $(dialougue).animate({
+            opacity: 'toggle',
+            left: animateValue
+        }, 200, function () { $(dialougue).remove(); });
+    }
+
+}
+
+
+
+function showDialoguePopUp(src, settings) {
+
+    var customDdl = $(src).parent("div.dk_container");
+    if (customDdl.length) {
+        customDdl.attr("data-description", $(src).attr("data-description"));
+        src = customDdl;
+        if (typeof settings !== "undefined") {
+            settings.marginTop = (settings.customMarginTop ? settings.customMarginTop : 0);
+            settings.marginLeft = (settings.customMarginLeft ? settings.customMarginLeft : 0) - 12;
+        }
+
+    }
+    //Don't add dialogue if it has already been added
+    if ($(src).next().hasClass("NextHelperPopUp")) {
+        return false;
+    }
+
+    var title = $(src).attr("data-name");
+    var description = $(src).attr("data-description");
+    var icon = $(src).attr("data-icon");
+
+    if (title == null) {
+        if (typeof settings !== "undefined") {
+            title = settings.title;
+        }
+    }
+
+    if (description == null) {
+        if (typeof settings !== "undefined") {
+            description = settings.description;
+        }
+        
+    }
+
+    if (icon == null) {
+        if (typeof settings !== "undefined") {
+            icon = settings.icon;
+        }
+        
+    }
+
+    var dialougue = $("<div class=\"NextHelperPopUp\" />");
+    if (typeof settings !== "undefined" && settings.errorMessage) {
+        $(dialougue).addClass("errorMessage");
+    }
+
+    if (typeof settings !== "undefined" && settings.customCSS) {
+        $(dialougue).attr("style", settings.customCSS);
+    }
+
+
+    if (icon != null) {
+        var img = $("<img />");
+        $(img).attr("src", icon).addClass("popIcon");
+        $(dialougue).append(img);
+    }
+
+
+    var heading = $("<h3 />");
+    var para = $("<p />");
+
+    if (title != null) {
+        $(heading).html(title);
+    }
+
+    $(para).html(description);
+
+
+    if (typeof settings !== "undefined" && settings.color) {
+        $(para).css("color", settings.color);
+    }
+
+    if ($(src).attr("data-description-id"))
+        $(para).html($('#' + $(src).attr("data-description-id")).html());
+    if (title != null) {
+        $(dialougue).append(heading);
+    }
+    $(dialougue).append(para);
+
+    //Apend dialogue to element
+    if (typeof settings !== "undefined" && ($(settings.target).length > 0)) {
+        $(target).append(dialougue);
+    } else {
+        $(src).after(dialougue);
+    }
+
+    if (typeof settings !== "undefined" && settings.width > 0) {
+        $(dialougue).width(settings.width);
+    }
+
+    var dialogueHeight = $(dialougue).height();
+
+    if (icon != null) {
+        $(img).css("margin-bottom", dialogueHeight - $(img).height());
+    }
+
+    var srcHeight = $(src).outerHeight(true);
+    var srcWidth = $(src).width();
+    var srcOffset = $(src).offset();
+
+    var animateValue = "-=15";
+    var dialogueWidth = $(dialougue).width();
+
+    var customLeftMargin = 0;
+
+    if (typeof settings !== "undefined" && settings.marginLeft) {
+        customLeftMargin = settings.marginLeft;
+    }
+
+    var customMarginTop = 0;
+    if (typeof settings !== "undefined" && settings.marginTop) {
+        customMarginTop = settings.marginTop;
+    }
+
+    if (typeof settings !== "undefined" && settings.customClassName) {
+        $(dialougue).addClass(settings.customClassName);
+    }
+
+    if (typeof settings !== "undefined") {
+    switch (settings.align) {
+        case 'top':
+            var offsetTop = srcOffset.top - (dialogueHeight + (srcHeight * 2));
+            $(dialougue).offset({ left: srcOffset.left + customLeftMargin, top: offsetTop + customMarginTop });
+            $(dialougue).addClass("popTop");
+            break;
+        case 'right':
+            var offsetTop = srcOffset.top - (dialogueHeight / 2);
+            if (settings.errorMessage) {
+                offsetTop = srcOffset.top - (srcHeight / 2);
+            }
+            var offsetLeft = srcOffset.left + srcWidth + 35;
+            $(dialougue).offset({ left: offsetLeft + customLeftMargin, top: offsetTop + customMarginTop });
+            $(dialougue).addClass("popRight");
+            break;
+        case 'left':
+            var offsetTop = srcOffset.top - (27);
+            var offsetLeft = srcOffset.left - $(dialougue).width() - 45;
+            $(dialougue).offset({ left: offsetLeft + customLeftMargin, top: offsetTop + customMarginTop });
+            $(dialougue).addClass("popLeft");
+            animateValue = "+=15";
+            break;
+        case 'bottom':
+            var offsetTop = srcOffset.top + srcHeight + 13;
+            var offsetLeft = srcOffset.left - (dialogueWidth/2);
+            $(dialougue).offset({ left: offsetLeft + customLeftMargin, top: offsetTop + customMarginTop });
+            $(dialougue).addClass("popBottom");
+            animateValue = "+=15";
+            break;
+
+
+    }
+    }
+
+    $(dialougue).hide();
+
+    //Animate dialogue into view
+    $(dialougue).animate({
+        opacity: 'toggle',
+        left: animateValue
+    }, 200 );
+
+    if (typeof settings !== "undefined" && settings.autoClose) {
+        $(src).mouseleave(function () {
+            $(dialougue).animate({
+                opacity: 'toggle',
+                left: animateValue
+            }, 200, function () { $(this).remove(); }
+            );
+        });
+    }
+
+
+
+    if (typeof settings !== "undefined" && settings.closeOnDialogueOut) {
+        $(dialougue).mouseleave(function () {
+            $(dialougue).animate({
+                opacity: 'toggle',
+                left: animateValue
+            }, 200, function () { $(this).remove(); }
+            );
+        });
+    }
+
+
+
+}
+
+
+
+
+
+

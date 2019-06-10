@@ -1,0 +1,433 @@
+﻿.NextCarouselWrapper ul.NextCarousel {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+.NextCarouselWrapper ul.NextCarousel li {
+  width: 232px;
+  margin: 0  15px 0 0;
+  height: 100px;
+  display: block;
+  float: left;
+}
+.NextCarouselWrapper .NextCarouselClippingRegion {
+  position: relative;
+  overflow: hidden;
+}
+.NextCarouselWrapper div.NextNavWrapper {
+  margin: 9px auto;
+}
+.NextCarouselWrapper div.NextNavWrapper ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  padding-top: 10px;
+  clear: both;
+}
+.NextCarouselWrapper div.NextNavWrapper ul li {
+  display: block;
+  float: left;
+  width: 11px;
+  height: 11px;
+  overflow: hidden;
+  margin-right: 6px;
+  margin-top: 8px;
+  background-image: url(/Images/Structural/Paging/carousel-sprite.png);
+  background-repeat: no-repeat;
+  background-position: -35px -49px;
+}
+.NextCarouselWrapper div.NextNavWrapper ul li.NextCarouselLinkActive {
+  background-position: -18px -49px;
+}
+.NextCarouselWrapper div.NextNavWrapper ul li.NextCarouselPrevious,
+.NextCarouselWrapper div.NextNavWrapper ul li.NextCarouselNext {
+  margin-top: 0px;
+}
+.NextCarouselWrapper div.NextNavWrapper ul li.NextCarouselPrevious,
+.NextCarouselWrapper div.NextNavWrapper ul li.NextCarouselNext,
+.NextCarouselWrapper div.NextNavWrapper ul li.NextCarouselPrevious a,
+.NextCarouselWrapper div.NextNavWrapper ul li.NextCarouselNext a {
+  width: 15px;
+  height: 30px;
+}
+.NextCarouselWrapper div.NextNavWrapper ul li.NextCarouselPrevious {
+  background-position: -9px -7px;
+}
+.NextCarouselWrapper div.NextNavWrapper ul li.NextCarouselNext {
+  background-position: -41px -7px;
+}
+.NextCarouselWrapper div.NextNavWrapper ul li.NextCarouselPrevious.disabled a,
+.NextCarouselWrapper div.NextNavWrapper ul li.NextCarouselNext.disabled a {
+  cursor: default;
+}
+.NextCarouselWrapper div.NextNavWrapper ul li a {
+  display: block;
+  float: left;
+  width: 11px;
+  height: 11px;
+  overflow: hidden;
+  text-indent: -1000px;
+}
+/* Slider */
+.NextSlideWindow {
+  display: block;
+  overflow: hidden;
+}
+.NextSlideWindow.NextSlideWindowOpen {
+  height: 300px;
+}
+.NextSlideWindow.NextSlideWindowClosed {
+  height: 50px;
+}
+.NextSlideWindow h3 {
+  background-color: #f9f9f9;
+  background-position: left top;
+  width: 916px;
+  height: 10px;
+  padding: 15px 30px 15px 30px;
+  font-size: 14px;
+  font-weight: normal;
+  text-transform: uppercase;
+  background-image: url('/IMAGES/Structural/ProductPage/fullWidthFade.jpg');
+  background-repeat: repeat-y;
+  margin-bottom: 15px;
+  color: #323232;
+  line-height: 100%;
+}
+.NextSlideWindow a.btnOpen,
+.NextSlideWindow a.btnClose {
+  float: right;
+  overflow: hidden;
+  margin-top: 2px;
+  position: relative;
+  background-repeat: no-repeat;
+  background-position: right center;
+  padding-right: 26px;
+}
+.NextSlideWindow a.btnOpen {
+  background-image: url('/IMAGES/Structural/Icons/arrow_down.png');
+}
+.NextSlideWindow a.btnClose {
+  background-image: url('/IMAGES/Structural/Icons/arrow_up.png');
+}
+/* Helper pop up */
+.NextHelperPopUp {
+  background: #111111;
+  position: absolute;
+  padding: 9px;
+  text-shadow: none;
+  width: 230px;
+  margin-top: -30px;
+  z-index: 500;
+  color: #fff;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+}
+.NextHelperPopUp.popRight {
+  width: auto;
+  width: 300px;
+}
+.NextHelperPopUp.popTop::after {
+  background-color: #111;
+  content: "\00a0";
+  display: block;
+  height: 15px;
+  left: 50px;
+  position: relative;
+  bottom: -16px;
+  transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  width: 15px;
+  z-index: 499;
+}
+.NextHelperPopUp.popRight::before {
+  background-color: #111;
+  content: "\00a0";
+  display: block;
+  height: 15px;
+  left: -7px;
+  position: absolute;
+  top: 21px;
+  transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  width: 15px;
+  z-index: 4999;
+  vertical-align: top;
+}
+.NextHelperPopUp.popLeft::after {
+  background-color: #111;
+  content: "\00a0";
+  display: block;
+  height: 15px;
+  right: -7px;
+  position: absolute;
+  top: 45%;
+  transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  width: 15px;
+  z-index: 4999;
+  vertical-align: top;
+}
+.NextHelperPopUp.popBottom::after {
+  background-color: #111;
+  content: "\00a0";
+  display: inline-block;
+  height: 15px;
+  right: 51%;
+  position: absolute;
+  top: -7px;
+  transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  width: 15px;
+  z-index: 4999;
+  vertical-align: top;
+}
+.NextHelperPopUp img.popIcon {
+  float: left;
+  margin-right: 5px;
+  margin-top: 3px;
+}
+.NextHelperPopUp h3 {
+  font-size: 12px;
+  line-height: 100%;
+  /* seting the margin to 1px or more fixes the missing pixle bug in the first character of NexthelperPopUp p */
+  margin: 1px;
+}
+.NextHelperPopUp p {
+  font-size: 12px;
+  padding: 0;
+  padding-top: 6px;
+  margin-bottom: 0.5em;
+}
+.webkit .NextHelperPopUp.errorMessage p {
+  /*setting top margin to 0 to allow for non ascii characters on ios.*/
+  padding-top: 0;
+}
+.NextHelperPopUp.errorMessage::after {
+  background-color: #FFF2F2;
+  border-top: 1px solid #be0000;
+  border-left: 1px solid #be0000;
+}
+table.ui-datepicker-calendar .ui-state-default,
+table.ui-datepicker-calendar .ui-widget-content .ui-state-default,
+.ui-datepicker-unselectable,
+td.ui-state-disabled {
+  background-image: url('../IMAGES/Structural/Calendar/standard-tile.jpg');
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
+  padding: 0px;
+  text-align: center;
+  color: #fff;
+  width: 31px;
+  height: 24px;
+  padding-top: 7px;
+  background-color: #2C2C2C;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+  opacity: 1;
+}
+table.ui-datepicker-calendar .ui-state-disabled,
+table.ui-datepicker-calendar .ui-datepicker-unselectable {
+  background-image: url('../IMAGES/Structural/Calendar/blank.jpg');
+  background-repeat: no-repeat;
+  opacity: 1;
+}
+table.ui-datepicker-calendar td.ui-state-disabled span.ui-state-default {
+  background-image: none;
+  background-color: transparent;
+  color: #535353;
+  text-shadow: none;
+}
+table.ui-datepicker-calendar .ui-state-active {
+  background-image: url('../IMAGES/Structural/Calendar/calendar-on.jpg');
+  background-repeat: no-repeat;
+}
+table.ui-datepicker-calendar .ui-state-hover {
+  background-image: url('../IMAGES/Structural/Calendar/calendar-over.jpg');
+  background-repeat: no-repeat;
+}
+.ui-datepicker td {
+  padding: 0px;
+}
+.ui-datepicker th {
+  border: 0 none;
+  font-weight: bold;
+  padding: 0;
+  text-align: center;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 9px;
+  color: #B7B7B7;
+  height: 14px;
+  padding-top: 3px;
+}
+.ui-datepicker table thead {
+  background: #1C1C1C;
+}
+.ui-datepicker table thead tr {
+  height: 17px;
+  border-bottom: 1px solid #000;
+}
+.ui-widget {
+  font: 12px Helvetica, Arial, sans-serif;
+}
+.ui-datepicker,
+.ui-datepicker .ui-datepicker-title {
+  font: 12px Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+}
+.ui-datepicker .ui-widget-header {
+  background: none;
+  border-radius: 0;
+  border: none;
+}
+.ui-datepicker .ui-widget-header,
+.ui-datepicker .ui-datepicker-header {
+  background-image: url('../IMAGES/Structural/Calendar/month-bg.jpg');
+  color: #fff;
+  padding: 9px 0 0 0;
+  margin: 6px 1px 0 1px;
+  height: 24px;
+}
+table.ui-datepicker-calendar .ui-datepicker td {
+  padding: 0px;
+  border: 0;
+}
+.ui-datepicker .ui-corner-all,
+.ui-datepicker .ui-corner-bottom,
+.ui-datepicker .ui-corner-left,
+.ui-datepicker .ui-corner-bl {
+  border-radius: 0;
+}
+#ui-datepicker-div {
+  width: 300px;
+  border: none;
+  padding: 5px;
+  background: #fff;
+  display: none;
+}
+table.ui-datepicker-calendar .ui-state-default,
+table.ui-datepicker-calendar .ui-widget-content .ui-state-default,
+table.ui-datepicker-calendar .ui-widget-header .ui-state-default {
+  border: none;
+}
+table.ui-datepicker-calendar tr {
+  height: 30px;
+  overflow: hidden;
+}
+.ui-datepicker-multi .ui-datepicker-group table {
+  background-color: #2C2C2C;
+}
+.ui-datepicker-group.ui-datepicker-group-first,
+.ui-datepicker-group.ui-datepicker-group-last {
+  float: left;
+  position: absolute;
+  width: 217px;
+  background-color: #1C1C1C;
+  -moz-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.8);
+  -webkit-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.8);
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.8);
+}
+.ui-datepicker-group.ui-datepicker-group-first {
+  border-right: 1px solid #000;
+}
+.ui-datepicker-group.ui-datepicker-group-last {
+  margin-left: 218px;
+}
+.ui-datepicker .ui-datepicker-buttonpane {
+  background-image: none;
+  border-bottom: 0 none;
+  border-left: 0 none;
+  border-right: 0 none;
+  margin: -5px 0 5px -5px;
+  padding: 4px;
+  border-top: 220px solid #fff;
+  width: 438px;
+  height: 33px;
+  background-color: #fff;
+  -moz-box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.6);
+  box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.6);
+}
+.ui-datepicker-multi .ui-datepicker-group table {
+  margin: 0;
+}
+.ui-datepicker .ui-datepicker-prev,
+.ui-datepicker .ui-datepicker-next {
+  top: 5px;
+}
+.ui-datepicker .ui-datepicker-next-hover {
+  top: 5px;
+  border: 0;
+  background: none;
+  right: 2px;
+  opacity: 0.35;
+}
+a.ui-datepicker-prev {
+  right: 0px;
+}
+.ui-datepicker a.ui-datepicker-prev-hover,
+a.ui-datepicker-prev-hover {
+  margin-left: 1px;
+  border: 0;
+  background: none;
+  opacity: 0.35;
+}
+.ui-datepicker .ui-icon.ui-icon-circle-triangle-e {
+  background-image: url('../IMAGES/Structural/Calendar/right-arrow-white.jpg');
+  background-repeat: no-repeat;
+  background-position: 0 0;
+}
+.ui-datepicker .ui-icon.ui-icon-circle-triangle-w {
+  background-image: url('../IMAGES/Structural/Calendar/left-arrow-white.jpg');
+  background-repeat: no-repeat;
+  background-position: 0 0;
+}
+.ui-datepicker-buttonpane button.ui-state-default,
+.ui-datepicker-buttonpane button.ui-widget-content,
+.ui-datepicker-buttonpane button.ui-state-default,
+.ui-datepicker-buttonpane button.ui-widget-header .ui-state-default,
+.ui-datepicker-buttonpane button.ui-datepicker-current {
+  background-color: #24968C;
+  font-family: Helvetica, Arial, sans-serif;
+  margin-top: 3px;
+  font-weight: bold;
+  opacity: 1;
+  background-image: none;
+  font-size: 11px;
+  color: #ffffff;
+  padding: 4px 21px;
+  background: -moz-linear-gradient(top, #29aca1 0%, #27a399 25%, #24968c 50%, #20887e 75%, #1f8278);
+  background: -webkit-gradient(linear, left top, left bottom, from(#29aca1), color-stop(0.25, #27a399), color-stop(0.5, #24968c), color-stop(0.75, #20887e), to(#1f8278));
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border: 0px solid;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+.ui-datepicker-buttonpane button.ui-datepicker-close {
+  background-color: #535353;
+  margin-right: 2px;
+  background: -moz-linear-gradient(top, #606060 0%, #5b5b5b 25%, #545454 50%, #4d4d4d 75%, #484848);
+  background: -webkit-gradient(linear, left top, left bottom, from(#606060), color-stop(0.25, #5b5b5b), color-stop(0.5, #545454), color-stop(0.75, #4d4d4d), to(#484848));
+}
+/*# sourceMappingURL=UI_Plugins.css.map */
